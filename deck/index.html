@@ -1,1 +1,1386 @@
-{"id":"/deck/index.html","path":"/deck/index.html","sha":"d5958a4684a5e3f5d02041201e81fc0d355d4905","mime_type":"text/html","size":29621,"site_id":"044b505b-6f58-42b0-b121-dcc3dec4704d","deploy_id":"69dbf292e596df61e31341fd"}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamoa | Financial Intelligence</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: #fafafa;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-family: 'Michroma', sans-serif;
+            font-size: 24px;
+            letter-spacing: 6px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 0%, #888888 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 48px;
+        }
+        
+        .upload-section {
+            background: #111111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        
+        .upload-area {
+            border: 1px dashed #333;
+            border-radius: 12px;
+            padding: 48px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #555;
+            background: #151515;
+        }
+        
+        .upload-area.dragover {
+            border-color: #fff;
+            background: #151515;
+        }
+        
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            opacity: 0.5;
+        }
+        
+        .upload-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: #888;
+        }
+        
+        .upload-text {
+            color: #888;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            color: #555;
+            font-size: 13px;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .file-selected {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: #151515;
+            border: 1px solid #282828;
+            border-radius: 10px;
+            margin-top: 16px;
+        }
+        
+        .file-name {
+            color: #fafafa;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: #fafafa;
+            color: #0a0a0a;
+        }
+        
+        .btn-primary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-primary:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: #888;
+            padding: 8px 16px;
+        }
+        
+        .btn-ghost:hover {
+            color: #fafafa;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #333;
+            color: #fafafa;
+        }
+        
+        .btn-outline:hover {
+            background: #1a1a1a;
+            border-color: #555;
+        }
+        
+        .extract-btn {
+            margin-top: 24px;
+            width: 100%;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 24px;
+            color: #888;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-top-color: #fafafa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .results h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fafafa;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: #111111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .card h3 {
+            color: #fafafa;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-subtitle {
+            color: #555;
+            font-size: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .metric-value {
+            color: #fafafa;
+            font-weight: 600;
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .metric-value.positive {
+            color: #22c55e;
+        }
+        
+        .metric-value.negative {
+            color: #ef4444;
+        }
+        
+        .error-message {
+            display: none;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        /* Analysis Choice Section */
+        .analysis-choice {
+            display: none;
+            margin-top: 32px;
+        }
+        
+        .analysis-choice h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #fafafa;
+        }
+        
+        .choice-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        @media (max-width: 600px) {
+            .choice-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .choice-btn {
+            background: #111;
+            border: 1px solid #282828;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .choice-btn:hover {
+            border-color: #444;
+            background: #151515;
+        }
+        
+        .choice-btn.active {
+            border-color: #fafafa;
+        }
+        
+        .choice-btn h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fafafa;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .choice-btn p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .choice-icon {
+            font-size: 20px;
+        }
+
+        .json-toggle {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .json-toggle button {
+            background: transparent;
+            border: 1px solid #282828;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #666;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .json-toggle button:hover {
+            border-color: #444;
+            color: #888;
+        }
+
+        .json-output {
+            display: none;
+            margin-top: 16px;
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            color: #888;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* Underwriting Section */
+        .underwriting-card, .cfo-card {
+            grid-column: 1 / -1;
+            margin-top: 4px;
+        }
+
+        .decision-banner {
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .decision-banner.green {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .decision-banner.yellow {
+            background: rgba(234, 179, 8, 0.1);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .decision-banner.red {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .decision-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .decision-banner.green .decision-text {
+            color: #22c55e;
+        }
+
+        .decision-banner.yellow .decision-text {
+            color: #eab308;
+        }
+
+        .decision-banner.red .decision-text {
+            color: #ef4444;
+        }
+
+        .underwriting-details {
+            margin-top: 24px;
+        }
+
+        .underwriting-details h4, .cfo-section h4 {
+            color: #555;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .ratios-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .ratios-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .ratio-item {
+            text-align: center;
+            padding: 16px;
+            background: #0d0d0d;
+            border-radius: 10px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .ratio-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fafafa;
+            margin-bottom: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ratio-label {
+            font-size: 11px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .analysis-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .analysis-section li {
+            padding: 10px 0;
+            border-bottom: 1px solid #1a1a1a;
+            font-size: 13px;
+        }
+
+        .analysis-section li:last-child {
+            border-bottom: none;
+        }
+
+        .strengths-section li {
+            color: #22c55e;
+        }
+
+        .concerns-section li {
+            color: #f97316;
+        }
+
+        .loan-recommendation {
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, #151515 0%, #0d0d0d 100%);
+            border: 1px solid #222;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .loan-amount {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fafafa;
+            letter-spacing: -1px;
+        }
+
+        .loan-label {
+            font-size: 12px;
+            color: #555;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* CFO Analysis Styles */
+        .health-score-container {
+            text-align: center;
+            padding: 32px;
+            background: #0d0d0d;
+            border-radius: 12px;
+            border: 1px solid #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .health-score {
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .health-score.grade-a { color: #22c55e; }
+        .health-score.grade-b { color: #84cc16; }
+        .health-score.grade-c { color: #eab308; }
+        .health-score.grade-d { color: #f97316; }
+        .health-score.grade-f { color: #ef4444; }
+
+        .health-grade {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cfo-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .cfo-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .cfo-metric-card {
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .cfo-metric-card h5 {
+            font-size: 11px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .cfo-metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .cfo-metric-row span:first-child {
+            color: #666;
+        }
+
+        .cfo-metric-row span:last-child {
+            color: #fafafa;
+            font-weight: 500;
+        }
+
+        .insights-list {
+            margin-top: 24px;
+        }
+
+        .insight-item {
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .insight-item.strength {
+            border-left: 3px solid #22c55e;
+        }
+
+        .insight-item.warning {
+            border-left: 3px solid #f97316;
+        }
+
+        .insight-item.opportunity {
+            border-left: 3px solid #3b82f6;
+        }
+
+        .insight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #fafafa;
+        }
+
+        .insight-category {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .insight-detail {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">HAMOA</div>
+        <p class="tagline">Financial Intelligence</p>
+        
+        <div class="upload-section">
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                    </svg>
+                </div>
+                <div class="upload-text">Drop your financial statements here</div>
+                <div class="upload-hint">PDF, Excel, or CSV • Upload one or multiple files</div>
+            </div>
+            <input type="file" id="file-input" accept=".pdf,.xlsx,.xls,.csv" multiple>
+            
+            <div class="file-selected" id="file-selected" style="display: none;">
+                <span class="file-name" id="file-name"></span>
+                <button class="btn btn-ghost" id="remove-file">Remove</button>
+            </div>
+            
+            <button class="btn btn-primary extract-btn" id="extract-btn" disabled>
+                Analyze
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <span>Analyzing documents...</span>
+            </div>
+            
+            <div class="error-message" id="error-message"></div>
+        </div>
+        
+        <!-- Analysis Choice -->
+        <div class="analysis-choice" id="analysis-choice">
+            <h3>Choose Analysis Type</h3>
+            <div class="choice-buttons">
+                <button class="choice-btn" id="choice-cfo">
+                    <h4><span class="choice-icon">📊</span> CFO Analysis</h4>
+                    <p>Financial health score, cash flow analysis, efficiency metrics, and actionable insights</p>
+                </button>
+                <button class="choice-btn" id="choice-lending">
+                    <h4><span class="choice-icon">💰</span> Lending Request</h4>
+                    <p>Credit assessment, debt service coverage, and recommended loan amount</p>
+                </button>
+            </div>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="results-header">
+                <h2>Financial Data</h2>
+                <span class="status-badge status-success" id="status-badge">Extracted</span>
+            </div>
+            
+            <div class="cards">
+                <div class="card" id="pl-card">
+                    <h3>Profit & Loss</h3>
+                    <div class="card-subtitle" id="pl-subtitle">-</div>
+                    <div id="pl-metrics"></div>
+                </div>
+                
+                <div class="card" id="bs-card">
+                    <h3>Balance Sheet</h3>
+                    <div class="card-subtitle" id="bs-subtitle">-</div>
+                    <div id="bs-metrics"></div>
+                </div>
+
+                <!-- CFO Analysis Card -->
+                <div class="card cfo-card" id="cfo-card" style="display: none;">
+                    <h3>CFO Analysis</h3>
+                    
+                    <div class="health-score-container">
+                        <div class="health-score" id="health-score">--</div>
+                        <div class="health-grade" id="health-grade">Financial Health Score</div>
+                    </div>
+                    
+                    <div class="cfo-section">
+                        <h4>Key Metrics</h4>
+                        <div class="cfo-metrics-grid" id="cfo-metrics-grid"></div>
+                    </div>
+                    
+                    <div class="cfo-section">
+                        <h4>Insights & Recommendations</h4>
+                        <div class="insights-list" id="insights-list"></div>
+                    </div>
+                </div>
+
+                <!-- Underwriting Card -->
+                <div class="card underwriting-card" id="underwriting-card" style="display: none;">
+                    <h3>Underwriting Decision</h3>
+                    <div class="decision-banner" id="decision-banner">
+                        <span class="decision-text" id="decision-text">-</span>
+                    </div>
+                    <div class="underwriting-details">
+                        <h4>Key Ratios</h4>
+                        <div class="ratios-grid" id="ratios-metrics"></div>
+                        
+                        <div class="analysis-grid">
+                            <div class="analysis-section strengths-section" id="strengths-section">
+                                <h4>Strengths</h4>
+                                <ul id="strengths-list"></ul>
+                            </div>
+                            <div class="analysis-section concerns-section" id="concerns-section">
+                                <h4>Concerns</h4>
+                                <ul id="concerns-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loan-recommendation" id="loan-recommendation"></div>
+                </div>
+            </div>
+
+            <div class="json-toggle">
+                <button id="toggle-json">View Raw Data</button>
+            </div>
+            <pre class="json-output" id="json-output"></pre>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const WEBHOOK_URL = 'https://wmccormick0812.app.n8n.cloud/webhook/extract-financials';
+        
+        // Elements
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const fileSelected = document.getElementById('file-selected');
+        const fileName = document.getElementById('file-name');
+        const removeFile = document.getElementById('remove-file');
+        const extractBtn = document.getElementById('extract-btn');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const results = document.getElementById('results');
+        const analysisChoice = document.getElementById('analysis-choice');
+        const toggleJson = document.getElementById('toggle-json');
+        const jsonOutput = document.getElementById('json-output');
+        
+        let selectedFiles = [];
+        let extractedData = null;
+        
+        // File upload handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'];
+            const files = Array.from(e.dataTransfer.files).filter(f => 
+                validTypes.includes(f.type) || f.name.match(/\.(pdf|xlsx|xls|csv)$/i)
+            );
+            if (files.length > 0) {
+                handleFileSelect(files);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(Array.from(e.target.files));
+            }
+        });
+        
+        removeFile.addEventListener('click', () => {
+            selectedFiles = [];
+            fileSelected.style.display = 'none';
+            uploadArea.style.display = 'block';
+            extractBtn.disabled = true;
+            fileInput.value = '';
+            analysisChoice.style.display = 'none';
+            results.style.display = 'none';
+        });
+        
+        function handleFileSelect(files) {
+            selectedFiles = files;
+            fileName.textContent = files.length === 1 
+                ? files[0].name 
+                : `${files.length} files selected`;
+            fileSelected.style.display = 'flex';
+            uploadArea.style.display = 'none';
+            extractBtn.disabled = false;
+        }
+        
+        // Extract button - just extracts, then shows choice
+        extractBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) return;
+            
+            extractBtn.disabled = true;
+            loading.style.display = 'flex';
+            errorMessage.style.display = 'none';
+            results.style.display = 'none';
+            analysisChoice.style.display = 'none';
+            
+            try {
+                const filesData = await Promise.all(
+                    selectedFiles.map(file => processFile(file))
+                );
+                
+                // First call - just extraction
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        files: filesData,
+                        analysis_type: 'extract_only'
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`Server error: ${response.status}`);
+                
+                extractedData = await response.json();
+                displayExtractedData(extractedData);
+                
+                // Show analysis choice
+                analysisChoice.style.display = 'block';
+                results.style.display = 'block';
+                
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                extractBtn.disabled = false;
+            }
+        });
+        
+        // Analysis choice handlers
+        document.getElementById('choice-cfo').addEventListener('click', async () => {
+            await runAnalysis('cfo');
+        });
+        
+        document.getElementById('choice-lending').addEventListener('click', async () => {
+            await runAnalysis('lending');
+        });
+        
+        async function runAnalysis(type) {
+            loading.style.display = 'flex';
+            analysisChoice.style.display = 'none';
+            
+            try {
+                const filesData = await Promise.all(
+                    selectedFiles.map(file => processFile(file))
+                );
+                
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        files: filesData,
+                        analysis_type: type
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`Server error: ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (type === 'cfo') {
+                    displayCFOAnalysis(data);
+                } else {
+                    displayUnderwriting(data);
+                }
+                
+                jsonOutput.textContent = JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        function excelToText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        
+                        // Keywords that indicate relevant financial sheets
+                        const relevantKeywords = [
+                            'p&l', 'p & l', 'profit', 'loss', 'income', 'revenue',
+                            'balance', 'assets', 'liabilities',
+                            'financial', 'summary', 'statement', 'ytd', 'annual',
+                            'cash flow', 'cashflow', 'ebitda'
+                        ];
+                        
+                        // Find relevant sheets
+                        const relevantSheets = workbook.SheetNames.filter(name => {
+                            const normalized = name.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+                            return relevantKeywords.some(kw => normalized.includes(kw));
+                        });
+                        
+                        const sheetsToProcess = relevantSheets.length > 0 
+                            ? relevantSheets.slice(0, 2)
+                            : workbook.SheetNames.slice(0, 2);
+                        
+                        let allText = `EXCEL FILE: ${file.name}\nSheets being analyzed: ${sheetsToProcess.join(', ')}\n\n`;
+                        allText += `IMPORTANT: Extract the YTD or annual totals shown.\n\n`;
+                        
+                        for (const sheetName of sheetsToProcess) {
+                            const sheet = workbook.Sheets[sheetName];
+                            
+                            // Convert to array of arrays
+                            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                            
+                            if (jsonData.length === 0) continue;
+                            
+                            // Find the max column count
+                            const maxCols = Math.max(...jsonData.map(row => row.length));
+                            
+                            // Take first 60 rows
+                            const limitedRows = jsonData.slice(0, 60);
+                            
+                            // For each row, take first 3 cols (labels) and last 3 cols (YTD/totals)
+                            const processedRows = limitedRows.map(row => {
+                                if (row.length <= 6) return row;
+                                
+                                const firstCols = row.slice(0, 3);
+                                const lastCols = row.slice(-3);
+                                return [...firstCols, '...', ...lastCols];
+                            });
+                            
+                            // Convert back to CSV-like text
+                            const csvText = processedRows.map(row => 
+                                row.map(cell => {
+                                    const str = String(cell || '');
+                                    // Quote if contains comma
+                                    return str.includes(',') ? `"${str}"` : str;
+                                }).join(',')
+                            ).join('\n');
+                            
+                            allText += `\n========== SHEET: ${sheetName} ==========\n`;
+                            allText += `(Showing columns: A-C and last 3 columns with YTD/totals)\n\n`;
+                            allText += csvText;
+                            allText += `\n`;
+                        }
+                        
+                        resolve(allText);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        async function processFile(file) {
+            const isPDF = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            const isExcel = file.name.match(/\.(xlsx|xls|csv)$/i);
+            
+            if (isPDF) {
+                return {
+                    type: 'pdf',
+                    file_base64: await fileToBase64(file),
+                    document_name: file.name
+                };
+            } else if (isExcel) {
+                const textContent = await excelToText(file);
+                return {
+                    type: 'text',
+                    text_content: textContent,
+                    document_name: file.name
+                };
+            }
+            
+            throw new Error(`Unsupported file type: ${file.name}`);
+        }
+        
+        function formatCurrency(value) {
+            if (value === null || value === undefined) return '-';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+        
+        function formatPercent(value) {
+            if (value === null || value === undefined) return '-';
+            return value.toFixed(1) + '%';
+        }
+        
+        function displayExtractedData(data) {
+            const pl = data.profit_and_loss;
+            const bs = data.balance_sheet;
+            
+            // Hide analysis cards initially
+            document.getElementById('cfo-card').style.display = 'none';
+            document.getElementById('underwriting-card').style.display = 'none';
+            
+            // P&L Card
+            if (pl) {
+                document.getElementById('pl-subtitle').textContent = 
+                    `${pl.company_name || 'Unknown'} • ${pl.period_months || '?'} months ending ${pl.period_end || 'Unknown'}`;
+                
+                document.getElementById('pl-metrics').innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Total Revenue</span>
+                        <span class="metric-value">${formatCurrency(pl.total_revenue)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Cost of Goods Sold</span>
+                        <span class="metric-value">${formatCurrency(pl.total_cogs)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Gross Profit</span>
+                        <span class="metric-value">${formatCurrency(pl.gross_profit)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Gross Margin</span>
+                        <span class="metric-value">${formatPercent(pl.gross_margin_pct)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Operating Expenses</span>
+                        <span class="metric-value">${formatCurrency(pl.operating_expenses)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Operating Income</span>
+                        <span class="metric-value ${pl.operating_income >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl.operating_income)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Interest Expense</span>
+                        <span class="metric-value">${formatCurrency(pl.interest_expense)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net Income</span>
+                        <span class="metric-value ${pl.net_income >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl.net_income)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Net Margin</span>
+                        <span class="metric-value">${formatPercent(pl.net_margin_pct)}</span>
+                    </div>
+                `;
+            }
+            
+            // Balance Sheet Card
+            if (bs) {
+                document.getElementById('bs-subtitle').textContent = 
+                    `${bs.company_name || 'Unknown'} • As of ${bs.as_of_date || 'Unknown'}`;
+                
+                document.getElementById('bs-metrics').innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">Cash</span>
+                        <span class="metric-value">${formatCurrency(bs.cash)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Accounts Receivable</span>
+                        <span class="metric-value">${formatCurrency(bs.accounts_receivable)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Inventory</span>
+                        <span class="metric-value">${formatCurrency(bs.inventory)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Current Assets</span>
+                        <span class="metric-value">${formatCurrency(bs.total_current_assets)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Fixed Assets</span>
+                        <span class="metric-value">${formatCurrency(bs.total_fixed_assets)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Assets</span>
+                        <span class="metric-value">${formatCurrency(bs.total_assets)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Accounts Payable</span>
+                        <span class="metric-value">${formatCurrency(bs.accounts_payable)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Current Debt</span>
+                        <span class="metric-value">${formatCurrency(bs.current_debt)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Current Liabilities</span>
+                        <span class="metric-value">${formatCurrency(bs.total_current_liabilities)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Long-term Debt</span>
+                        <span class="metric-value">${formatCurrency(bs.long_term_debt)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Liabilities</span>
+                        <span class="metric-value">${formatCurrency(bs.total_liabilities)}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total Equity</span>
+                        <span class="metric-value ${bs.total_equity >= 0 ? 'positive' : 'negative'}">${formatCurrency(bs.total_equity)}</span>
+                    </div>
+                `;
+            }
+            
+            jsonOutput.textContent = JSON.stringify(data, null, 2);
+        }
+        
+        function displayCFOAnalysis(data) {
+            displayExtractedData(data);
+            
+            const cfo = data.cfo_analysis;
+            if (!cfo) return;
+            
+            const cfoCard = document.getElementById('cfo-card');
+            cfoCard.style.display = 'block';
+            
+            // Health Score
+            const healthScore = document.getElementById('health-score');
+            healthScore.textContent = cfo.health.score;
+            healthScore.className = `health-score grade-${cfo.health.grade.toLowerCase()}`;
+            document.getElementById('health-grade').textContent = `Grade: ${cfo.health.grade} • Financial Health Score`;
+            
+            // Metrics Grid
+            document.getElementById('cfo-metrics-grid').innerHTML = `
+                <div class="cfo-metric-card">
+                    <h5>Liquidity</h5>
+                    <div class="cfo-metric-row">
+                        <span>Current Ratio</span>
+                        <span>${cfo.liquidity.currentRatio || '-'}x</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>Quick Ratio</span>
+                        <span>${cfo.liquidity.quickRatio || '-'}x</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>Working Capital</span>
+                        <span>${formatCurrency(cfo.liquidity.workingCapital)}</span>
+                    </div>
+                </div>
+                <div class="cfo-metric-card">
+                    <h5>Profitability</h5>
+                    <div class="cfo-metric-row">
+                        <span>Gross Margin</span>
+                        <span>${cfo.profitability.grossMargin || '-'}%</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>Net Margin</span>
+                        <span>${cfo.profitability.netMargin || '-'}%</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>Return on Equity</span>
+                        <span>${cfo.profitability.returnOnEquity || '-'}%</span>
+                    </div>
+                </div>
+                <div class="cfo-metric-card">
+                    <h5>Leverage</h5>
+                    <div class="cfo-metric-row">
+                        <span>Debt/Equity</span>
+                        <span>${cfo.leverage.debtToEquity || '-'}x</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>Interest Coverage</span>
+                        <span>${cfo.leverage.interestCoverage || '-'}x</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>Total Debt</span>
+                        <span>${formatCurrency(cfo.leverage.totalDebt)}</span>
+                    </div>
+                </div>
+                <div class="cfo-metric-card">
+                    <h5>Efficiency</h5>
+                    <div class="cfo-metric-row">
+                        <span>DSO</span>
+                        <span>${cfo.efficiency.dso || '-'} days</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>DPO</span>
+                        <span>${cfo.efficiency.dpo || '-'} days</span>
+                    </div>
+                    <div class="cfo-metric-row">
+                        <span>Cash Cycle</span>
+                        <span>${cfo.efficiency.cashConversionCycle || '-'} days</span>
+                    </div>
+                </div>
+            `;
+            
+            // Insights
+            const insightsList = document.getElementById('insights-list');
+            if (cfo.insights && cfo.insights.length > 0) {
+                insightsList.innerHTML = cfo.insights.map(insight => `
+                    <div class="insight-item ${insight.type}">
+                        <div class="insight-header">
+                            <span class="insight-title">${insight.title}</span>
+                            <span class="insight-category">${insight.category}</span>
+                        </div>
+                        <div class="insight-detail">${insight.detail}</div>
+                    </div>
+                `).join('');
+            } else {
+                insightsList.innerHTML = '<p style="color: #666; font-size: 14px;">No specific insights generated.</p>';
+            }
+        }
+        
+        function displayUnderwriting(data) {
+            displayExtractedData(data);
+            
+            const uw = data.underwriting;
+            if (!uw) return;
+            
+            const uwCard = document.getElementById('underwriting-card');
+            uwCard.style.display = 'block';
+            
+            const decisionBanner = document.getElementById('decision-banner');
+            const decisionText = document.getElementById('decision-text');
+            
+            decisionBanner.className = `decision-banner ${uw.decisionColor}`;
+            decisionText.textContent = uw.decision;
+            
+            // Ratios
+            document.getElementById('ratios-metrics').innerHTML = `
+                <div class="ratio-item">
+                    <div class="ratio-value">${uw.ratios.dscr || '-'}x</div>
+                    <div class="ratio-label">DSCR</div>
+                </div>
+                <div class="ratio-item">
+                    <div class="ratio-value">${uw.ratios.currentRatio || '-'}x</div>
+                    <div class="ratio-label">Current Ratio</div>
+                </div>
+                <div class="ratio-item">
+                    <div class="ratio-value">${uw.ratios.debtToEquity || '-'}x</div>
+                    <div class="ratio-label">Debt/Equity</div>
+                </div>
+                <div class="ratio-item">
+                    <div class="ratio-value">${uw.ratios.grossMargin || '-'}%</div>
+                    <div class="ratio-label">Gross Margin</div>
+                </div>
+                <div class="ratio-item">
+                    <div class="ratio-value">${uw.ratios.netMargin || '-'}%</div>
+                    <div class="ratio-label">Net Margin</div>
+                </div>
+            `;
+            
+            // Strengths
+            const strengthsList = document.getElementById('strengths-list');
+            strengthsList.innerHTML = uw.strengths.map(s => `<li>${s}</li>`).join('');
+            
+            // Concerns
+            const concernsList = document.getElementById('concerns-list');
+            if (uw.concerns.length > 0) {
+                concernsList.innerHTML = uw.concerns.map(c => `<li>${c}</li>`).join('');
+                document.getElementById('concerns-section').style.display = 'block';
+            } else {
+                document.getElementById('concerns-section').style.display = 'none';
+            }
+            
+            // Loan Recommendation
+            if (uw.maxLoanAmount > 0) {
+                document.getElementById('loan-recommendation').innerHTML = `
+                    <div class="loan-amount">${formatCurrency(uw.maxLoanAmount)}</div>
+                    <div class="loan-label">Maximum Recommended Loan Amount</div>
+                `;
+            } else {
+                document.getElementById('loan-recommendation').innerHTML = `
+                    <div class="loan-label" style="color: #666;">Not recommended for financing at this time</div>
+                `;
+            }
+        }
+        
+        // Toggle JSON
+        toggleJson.addEventListener('click', () => {
+            if (jsonOutput.style.display === 'none' || jsonOutput.style.display === '') {
+                jsonOutput.style.display = 'block';
+                toggleJson.textContent = 'Hide Raw Data';
+            } else {
+                jsonOutput.style.display = 'none';
+                toggleJson.textContent = 'View Raw Data';
+            }
+        });
+    </script>
+</body>
+</html>
